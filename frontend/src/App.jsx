@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import API_URL from './config/api'
 import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import NavBar from './components/NavBar'
@@ -55,17 +56,20 @@ function MainApp() {
     setInputs(finalInputs)
     setIsLoading(true)
     try {
-      const res = await fetch('/api/predict', {
+      const res = await fetch(`${API_URL}/predict`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(finalInputs),
       })
+      if (!res.ok) {
+        throw new Error(`Server error: ${res.status}`)
+      }
       const data = await res.json()
       setResult({ ...data, inputs: finalInputs })
       setIsLoading(false)
       navigate('/insights')
     } catch {
-      alert('Could not reach the server. Make sure the backend is running on port 8000.')
+      alert('Unable to fetch prediction. Please try again.')
       setIsLoading(false)
     }
   }

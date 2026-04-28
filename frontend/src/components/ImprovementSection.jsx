@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import API_URL from '../config/api'
 
 const RISK_LABELS_FRIENDLY = {
   0: "You're in great shape!",
@@ -15,6 +16,7 @@ export default function ImprovementSection({ inputs, currentResult }) {
   const [sleep, setSleep] = useState(inputs.sleep_hours)
   const [simResult, setSimResult] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [simError, setSimError] = useState(false)
 
   useEffect(() => {
     const hasChange =
@@ -26,8 +28,9 @@ export default function ImprovementSection({ inputs, currentResult }) {
 
     const timer = setTimeout(async () => {
       setLoading(true)
+      setSimError(false)
       try {
-        const res = await fetch('/api/simulate', {
+        const res = await fetch(`${API_URL}/simulate`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -37,10 +40,11 @@ export default function ImprovementSection({ inputs, currentResult }) {
             new_sleep: sleep,
           }),
         })
+        if (!res.ok) throw new Error(`Server error: ${res.status}`)
         const data = await res.json()
         setSimResult(data)
       } catch {
-        /* fail silently */
+        setSimError(true)
       } finally {
         setLoading(false)
       }
@@ -109,6 +113,17 @@ export default function ImprovementSection({ inputs, currentResult }) {
             {improved && '🎉 These changes could lower your risk level!'}
             {same && '➡️ Your risk level stays the same — try bigger changes.'}
             {worse && '⚠️ This combination raises risk — try different values.'}
+          </motion.p>
+        )}
+        {simError && (
+          <motion.p
+            key="sim-error"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="mt-8 px-6 py-4 rounded-xl text-sm font-bold text-center shadow-sm bg-[#FDF5EE] dark:bg-orange-900/30 text-[#B07040] dark:text-orange-400"
+          >
+            ⚠️ Unable to fetch prediction. Please try again.
           </motion.p>
         )}
       </AnimatePresence>
