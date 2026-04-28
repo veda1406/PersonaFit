@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: #8FB78F;
+  --color-secondary: #84C0CF;
+  --color-bg: #F5F9F6;
+  --color-text: #2F556B;
+  --color-risk-low: #8FB78F;
+  --color-risk-medium: #D98CA1;
+  --color-risk-high: #E9B18A;
+  --color-card: #FFFFFF;
+  --color-muted: #8AAAB8;
+
+  --radius-card: 20px;
+
+  --font-family-sans: 'Inter', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family-sans);
+}
+
+body {
+  @apply bg-[#F5F9F6] dark:bg-[#0F172A] text-[#2F556B] dark:text-gray-100 transition-colors duration-300;
+}
+
+/* Custom slider styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: #D6E8D6;
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #8FB78F;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(143,183,143,0.5);
+  transition: transform 0.15s;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Smooth page transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateY(16px);
+}
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
